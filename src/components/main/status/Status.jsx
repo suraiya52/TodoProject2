@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Today from "../../today/Today";
+import { TodoContext } from "../../../App";
 
-const Status = ({ todos, setTodos }) => {
+const Status = () => {
+  const { todos, setTodos } = useContext(TodoContext);
+  console.log(todos)
   const [status, setStatus] = useState("all");
   const [fitersTodos, setFiltersTodos] = useState(todos);
   //   const handleOption = (e) => {
@@ -28,7 +31,7 @@ const Status = ({ todos, setTodos }) => {
     if (status === "uncompleted") {
       setFiltersTodos(todos.filter((todo) => todo.checked !== true));
     }
-  }, [todos]);
+  }, [todos, status]);
   return (
     <>
       <div>

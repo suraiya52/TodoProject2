@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BsListUl } from "react-icons/bs";
 import { CgCalendarNext } from "react-icons/cg";
 import { FcTodoList } from "react-icons/fc";
@@ -19,15 +19,19 @@ import Today from "../today/Today";
 
 // import AllStatus from "../main/status/AllStatus";
 import Status from "../main/status/Status";
+import { TodoContext } from "../../App";
+import Next7Days from "../next7Days/Next7Days";
 
 const Sidebar = () => {
-  const [todos, setTodos] = useState([]);
+  // const [todos, setTodos] = useState([]);
+  const { todos, setTodos } = useContext(TodoContext);
   const [showModal, setShowModel] = useState(false);
   const [name, setName] = useState("");
   const [date, setdate] = useState(new Date());
   const [time, setTime] = useState("10:00");
   const [error, setError] = useState("");
   const [showUI, setShowUI] = useState("");
+  const [fitersTodos, setFiltersTodos] = useState(todos);
 
   console.log(showModal);
   const handleSubmit = (e) => {
@@ -57,7 +61,26 @@ const Sidebar = () => {
       setError("Please provide both name and time!"); // ✅ show error
     }
   };
-  console.log("todos", todos);
+  useEffect(() => {
+    const currentDate = new Date();
+    if (showUI === "today") {
+      setFiltersTodos(
+        todos.filter(
+          (todo) => todo?.dates === moment(currentDate).format("MM/DD/YYYY")
+        )
+      );
+    }
+    if (showUI === "next7") {
+      const next7Days = moment(currentDate).add(7, "days");
+      setFiltersTodos((todo) =>
+        moment(todo?.dates, "MM/DD/YYYY").isBetween(
+          moment(currentDate).subtract(1, "days")
+        )
+      );
+    }
+  }, [showUI, todos]);
+
+  // console.log("todos", todos);
   return (
     <div className="flex ">
       <div className="left-0 h-[calc(100vh-100px)]  w-80 bg-[#E1D8D9] text-white shadow-lg flex flex-col p-4 cursor-pointer">
@@ -88,7 +111,7 @@ const Sidebar = () => {
               className="text-black   text-2xl mt-6 flex justify-center gap-2"
               onClick={(e) => {
                 e.preventDefault();
-                setShowUI("next 7 ");
+                setShowUI("next7");
               }}
             >
               <CgCalendarNext />
@@ -193,10 +216,12 @@ const Sidebar = () => {
         </div>
       </div>
       <div className="flex w-full justify-center items-center ">
-        {showUI === "today" && <Today todos={todos} setTodos={setTodos} />}
-        {showUI === "next 7 " && <h1>Next 7 days </h1>}
-        {showUI === "all" && <h1>Show all</h1>}
-        {showUI === "status" && <Status todos={todos} setTodos={setTodos}/>}
+        {showUI === "today" && (
+          <Today todos={fitersTodos} setTodos={setTodos} />
+        )}
+        {showUI === "next7" && <Next7Days />}
+        {showUI === "all" && <Today todos={todos} setTodos={setTodos} />}
+        {showUI === "status" && <Status />}
       </div>
     </div>
   );

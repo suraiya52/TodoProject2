@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { createContext, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import Header from "./components/Header/Header";
 import Main from "./components/main/Main";
 
+export const TodoContext = createContext();
+
 function App() {
-  const [count, setCount] = useState(0);
+  const [todos, setTodos] = useState([]);
 
   return (
-    <div className="flex flex-col">
-      <Header />
-      <Main />
-   
-    </div>
+    <TodoContext.Provider value={{ todos, setTodos }}>
+      <div className="flex flex-col">
+        <Header />
+        <Main />
+      </div>
+    </TodoContext.Provider>
   );
 }
 

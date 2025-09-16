@@ -81,15 +81,19 @@
 // };
 
 // export default Today;
-import React from "react";
+import React, { useContext, useState } from "react";
 import { FaCheck, FaEdit, FaRegCheckCircle, FaTrash } from "react-icons/fa";
+import { TodoContext } from "../../App";
 
 const Today = ({ todos, setTodos }) => {
+  const [showUI, setShowUI] = useState("");
+  // const { todos, setTodos } = useContext(TodoContext);
+  // console.log("todos from today component", todos);
   // Toggle complete
   const handleCheck = (id) => {
     setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, checked: !todo.checked } : todo
+      prev?.map((todo) =>
+        todo?.id === id ? { ...todo, checked: !todo?.checked } : todo
       )
     );
   };
@@ -102,7 +106,11 @@ const Today = ({ todos, setTodos }) => {
   return (
     <div className="max-w-md mx-auto mt-10 p-4 bg-[#E1D8D9] rounded-lg shadow">
       <h2 className="text-center text-lg font-semibold mb-4">
-        Your Todos List: ({todos.length})
+        {showUI === "today"
+          ? `Today's Todos: (${todos?.length || 0})`
+          : showUI === "next7"
+          ? `Next 7 Days Todos: (${todos?.length || 0})`
+          : `All Todos: (${todos?.length || 0})`}
       </h2>
 
       <div className="flex flex-col gap-3">
@@ -110,7 +118,7 @@ const Today = ({ todos, setTodos }) => {
           <div
             key={todo.id}
             className={`flex items-center justify-between p-3 bg-white rounded-md shadow ${
-              todo.completed ? "opacity-50 line-through" : ""
+              todo.checked ? "opacity-50 line-through" : ""
             }`}
           >
             <div className="flex flex-col">
@@ -147,10 +155,6 @@ const Today = ({ todos, setTodos }) => {
             </div>
           </div>
         ))}
-
-        {todos.length === 0 && (
-          <p className="text-center text-gray-500">No todos available</p>
-        )}
       </div>
     </div>
   );
